@@ -123,7 +123,22 @@ body {
 }
 
 .tile.flip {
-    transform: rotateX(90deg);
+    animation: 0.5s linear flipping;
+    /* transform: rotateX(90deg); */
+}
+
+@keyframes flipping {
+    0% {
+        tranform: rotateX(0deg);
+    }
+
+    50% {
+        transform: rotateX(90deg);
+    }
+
+    100% {
+        transform: rotateX(0deg);
+    }
 }
 
 @keyframes shake {

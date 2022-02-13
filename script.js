@@ -15384,36 +15384,44 @@ function submitGuess() {
     }
 
     stopInteraction();
-    activeTiles.forEach((...params) => flipTile(...params, guess));
+    flipTile();
 }
 
-function flipTile(tile, index, array, guess) {
-    const letter = tile.dataset.letter;
-    const key = keyboard.querySelector(`[data-key='${letter}'i]`);
-    setTimeout(() => {
-        tile.classList.add("flip");
-    }, (index * FLIP_ANIMATION_DURATION) / 2)
+function flipTile() {
+    const activeTiles = [...getActiveTiles()];
+    let checkWord = targetWord;
+    const guess = [];
 
-    tile.addEventListener('transitionend', () => {
-        tile.classList.remove('flip');
-        if (targetWord[index] === letter) {
-            tile.dataset.state = 'correct';
-            key.classList.add('correct');
-        } else if (targetWord.includes(letter)) {
-            tile.dataset.state = 'wrong-location';
-            key.classList.add('wrong-location');
-        } else {
-            tile.dataset.state = 'wrong';
-            key.classList.add('wrong');
+    activeTiles.forEach(tile => {
+        guess.push({ letter: tile.dataset.letter, state: 'wrong'});
+    })
+    
+    guess.forEach((guess, index) => {
+        if (guess.letter == targetWord[index]) {
+            guess.state = 'correct';
+            checkWord = checkWord.replace(guess.letter, '');
         }
+    })
+    
+    guess.forEach(guess => {
+        if (checkWord.includes(guess.letter)) {
+            guess.state = 'wrong-location';
+            checkWord = checkWord.replace(guess.letter, '');
+        }
+    })
+    
+    activeTiles.forEach((tile, index) => {
+        const key = keyboard.querySelector(`[data-key='${guess[index].letter}'i]`);
+        setTimeout(() => {
+            tile.classList.add('flip');
+            tile.dataset.state = guess[index].state;
+            key.classList.add(guess[index].state);
+            startInteraction();
+        }, index * FLIP_ANIMATION_DURATION / 2)
+        
+    })    
 
-        if (index === array.length -1) {
-            tile.addEventListener('transitionend', () => {
-                startInteraction();
-                checkWinLose(guess, array);
-            }, { once: true })
-        }
-    }, { once: true })
+    checkWinLose(guess, activeTiles);
 }
 
 function getActiveTiles() {
@@ -15445,7 +15453,12 @@ function shakeTiles(tiles) {
 }
 
 function checkWinLose(guess, tiles) {
-    if (guess === targetWord) {
+    let guessString = '';
+    guess.forEach(tile => {
+        guessString += tile.letter;
+    })
+
+    if (guessString === targetWord) {
         showAlert('You Win', 5000);
         danceTiles(tiles);
         stopInteraction();
