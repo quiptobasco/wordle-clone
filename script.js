@@ -15408,7 +15408,6 @@ function flipTile() {
         if (guess.letter == targetWord[index]) {
             guess.state = 'correct';
             checkWord = checkWord.replace(guess.letter, '');
-            console.log(targetWord[index])
         }
     })
     
