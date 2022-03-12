@@ -15398,7 +15398,6 @@ function flipTile() {
     
     guess.forEach(guess => {
         if (checkWord.includes(guess.letter)) {
-
             guess.state = 'wrong-location';
             checkWord = checkWord.replace(guess.letter, '');
         }
@@ -15410,7 +15409,6 @@ function flipTile() {
             checkWord = checkWord.replace(guess.letter, '');
         }
     })
-    
     
     activeTiles.forEach((tile, index) => {
         const key = keyboard.querySelector(`[data-key='${guess[index].letter}'i]`);
